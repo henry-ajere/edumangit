@@ -410,7 +410,7 @@ def getResult():
 
             result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
 
-            semesterlist[semester.semester] = result
+            semesterlist.append(result)
 
             culist.append(totalcu)
             wgplist.append(totalwgp)
