@@ -388,7 +388,7 @@ def getResult():
     def POST(tablename, matric_no, session):
         if not tablename == 'registered_course' : raise HTTP(400, json.dumps({'message':'Bad Request'}))
         student = db.student(matric_no=matric_no)
-        if not student: raise HTTP(401, json.dumps({'message':'Erro in matriculation number'})) #test if student exist
+        if not student: raise HTTP(401, json.dumps({'message':'Error in matriculation number'})) #test if student exist
 
         query = db.registered_course.student==student.id
         #result = db(query)(db.registered_course.sessions==session).select()
@@ -410,7 +410,8 @@ def getResult():
 
             result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
 
-            semesterlist.append(result)
+            semesterlist.extend(result)
+
 
             culist.append(totalcu)
             wgplist.append(totalwgp)
@@ -418,6 +419,8 @@ def getResult():
                 sgpa.append(round(totalwgp/totalcu, 2))
 
             cgpa = round(sum(wgplist)/sum(culist),2)
+            #semesterlist.append()
+
 
         return dict(semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
 
