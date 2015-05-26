@@ -408,7 +408,8 @@ def getResult():
             totalcu = db(query)(db.registered_course.sessions==session).select(sumcu).first()[sumcu] #still need to filter for semester
             totalwgp = db(query)(db.registered_course.sessions==session).select(sumwgp).first()[sumwgp] #still need to filete for semester
 
-            result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
+            #result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
+            result = db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select()
             resultdumps = json.dumps({'results' : result})
 
             semesterlist.extend(resultdumps)
