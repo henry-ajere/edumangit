@@ -419,7 +419,7 @@ def getResult():
 
             cgpa = round(sum(wgplist)/sum(culist),2)
 
-        return dict(result=result, semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
+        return semesterlist #dict(result=result, semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
 
     return locals()
 
