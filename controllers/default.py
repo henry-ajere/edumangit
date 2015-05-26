@@ -391,18 +391,21 @@ def getResult():
         if not student: raise HTTP(401, json.dumps({'message':'Erro in matriculation number'})) #test if student exist
 
         query = db.registered_course.student==student.id
-        result = db(query)(db.registered_course.sessions==session).select()
+        #result = db(query)(db.registered_course.sessions==session).select()
         semesters = db(query).select(db.registered_course.semester, db.registered_course.sessions, distinct=True)
         #list of credit_unit
         culist = []
         wgplist = []
         sgpa = []
         cgpa = 0.0
+        result = []
         for semester in semesters:
             sumcu = db.registered_course.credit_unit.sum()
             sumwgp = db.registered_course.Wgp.sum()
             totalcu = db(query)(db.registered_course.sessions==session).select(sumcu).first()[sumcu] #still need to filter for semester
             totalwgp = db(query)(db.registered_course.sessions==session).select(sumwgp).first()[sumwgp] #still need to filete for semester
+
+            result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester).select())
 
             #data.update({'a':1})
             culist.append(totalcu)
