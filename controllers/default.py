@@ -393,12 +393,15 @@ def getResult():
         query = db.registered_course.student==student.id
         #result = db(query)(db.registered_course.sessions==session).select()
         semesters = db(query).select(db.registered_course.semester, db.registered_course.sessions, distinct=True)
+        semesterlist = semesters.as_dict()
         #list of credit_unit
+
         culist = []
         wgplist = []
         sgpa = []
         cgpa = 0.0
         result = []
+
         for semester in semesters:
             sumcu = db.registered_course.credit_unit.sum()
             sumwgp = db.registered_course.Wgp.sum()
@@ -407,7 +410,8 @@ def getResult():
 
             result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
 
-            #data.update({'a':1})
+            semesterlist[semester.semester] = result
+
             culist.append(totalcu)
             wgplist.append(totalwgp)
             if totalcu: # to avoid division by zero
@@ -415,7 +419,7 @@ def getResult():
 
             cgpa = round(sum(wgplist)/sum(culist),2)
 
-        return dict(result=result, semester=semesters, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
+        return dict(result=result, semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
 
     return locals()
 
