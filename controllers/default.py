@@ -410,7 +410,7 @@ def getResult():
 
             result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
 
-            #semesterlist[semester.semester] = result
+            semesterlist[semester.semester] = result
 
             culist.append(totalcu)
             wgplist.append(totalwgp)
@@ -419,7 +419,7 @@ def getResult():
 
             cgpa = round(sum(wgplist)/sum(culist),2)
 
-        return dict(result=result, semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
+        return dict(semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
 
     return locals()
 
