@@ -1,5 +1,11 @@
 # coding: utf8
-from plugin_lazy_options_widget import lazy_options_widget
+if False:
+    from gluon import *
+    from gluon.tools import request,response, session, cache, Auth, DAL
+
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    auth=Auth(db)
+#from plugin_lazy_options_widget import lazy_options_widget
 from plugin_suggest_widget import suggest_widget
 from cascadedrop import CascadingSelect
 from gluon.contrib.populate import populate

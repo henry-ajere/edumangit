@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+if False:
+    from gluon import *
+    from gluon.tools import request,response, session, cache, Auth, DAL
 
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    auth=Auth(db)
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
 ## File is released under public domain and you can use without limitations
