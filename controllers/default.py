@@ -393,7 +393,7 @@ def getResult():
         query = db.registered_course.student==student.id
         #result = db(query)(db.registered_course.sessions==session).select()
         semesters = db(query).select(db.registered_course.semester, db.registered_course.sessions, distinct=True)
-        semesterlist = semesters.as_dict()
+        semesterlist = semesters.as_list()
         #list of credit_unit
 
         culist = []
@@ -410,7 +410,7 @@ def getResult():
 
             result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
 
-            semesterlist[semester.semester] = result
+            #semesterlist[semester.semester] = result
 
             culist.append(totalcu)
             wgplist.append(totalwgp)
