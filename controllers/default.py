@@ -391,9 +391,8 @@ def getResult():
         if not student: raise HTTP(401, json.dumps({'message':'Error in matriculation number'})) #test if student exist
 
         query = db.registered_course.student==student.id
-        #result = db(query)(db.registered_course.sessions==session).select()
         semesters = db(query).select(db.registered_course.semester, db.registered_course.sessions, distinct=True)
-        semesterlist = semesters.as_list()
+        semesterlist = semesters
         #list of credit_unit
 
         culist = []
@@ -401,30 +400,64 @@ def getResult():
         sgpa = []
         cgpa = 0.0
         result = []
+        totals = []
 
         for semester in semesters:
             sumcu = db.registered_course.credit_unit.sum()
             sumwgp = db.registered_course.Wgp.sum()
-            totalcu = db(query)(db.registered_course.sessions==session).select(sumcu).first()[sumcu] #still need to filter for semester
-            totalwgp = db(query)(db.registered_course.sessions==session).select(sumwgp).first()[sumwgp] #still need to filete for semester
-
-            #result.append(db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select())
-            result = db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select()
-            resultdumps = json.dumps({'results' : result})
-
-            semesterlist.extend(resultdumps)
+            totalcu = db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select(sumcu).first()[sumcu]
+            totalwgp = db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select(sumwgp).first()[sumwgp]
 
 
             culist.append(totalcu)
             wgplist.append(totalwgp)
             if totalcu: # to avoid division by zero
+                sgpa=round(totalwgp/totalcu, 2)
+
+
+            sresult = {semester.semester : db(query)(db.registered_course.sessions==session)(db.registered_course.semester==semester.semester).select()}
+            totals.append({semester.semester + "_sgpa" : sgpa, semester.semester + "_totalcredit" : totalcu})
+            result.append(sresult)
+            #result.append(totals)
+
+            cgpa = round(sum(wgplist)/sum(culist),2)
+
+        return dict(result=result, totals=totals, cgpa=cgpa) #tcredit=culist )
+
+    return locals()
+
+@request.restful()
+def getTranscript():
+    response.view = 'generic.json'
+    def POST(tablename, matric_no):
+        if not tablename == 'archresult' : raise HTTP(400, json.dumps({'message':'Bad Request'}))
+        student = db.student(matric_no=matric_no)
+        if not student: raise HTTP(401, json.dumps({'message':'Error in matriculation number'}))
+        query = db.archresult.student==student.id
+        result = db(query).select()
+
+        #get the number of semesters
+        semesters = db(query).select(db.archresult.semester, db.archresult.sessions, distinct=True)
+        #Initialize arrays and values
+        culist = []
+        wgplist = []
+        sgpa = []
+        cgpa = 0.0
+        for semester in semesters:
+            sumcu = db.archresult.credit_unit.sum()
+            sumwgp = db.archresult.Wgp.sum()
+            totalcu = db(query)(db.archresult.sessions==semester.sessions).select(sumcu).first()[sumcu] #filter for semester
+            totalwgp = db(query)(db.archresult.sessions==semester.sessions).select(sumwgp).first()[sumwgp] #filter for semester
+
+            culist.append(totalcu)
+            wgplist.append(totalwgp)
+            if totalcu: #to avoid division by zero
                 sgpa.append(round(totalwgp/totalcu, 2))
 
             cgpa = round(sum(wgplist)/sum(culist),2)
-            #semesterlist.append()
 
 
-        return dict(semester=semesterlist, sgpa=sgpa, cgpa=cgpa) #tcredit=culist )
+        return dict(transcript=result, creditlist=culist, totalcredit=sum(culist), cgpa=cgpa, )
 
     return locals()
 
